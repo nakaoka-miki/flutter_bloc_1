@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:sample_bloc1/next_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const App());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'タイマー'),
     );
   }
 }
@@ -29,12 +32,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int _second = 0;
+  Timer? _timer;
+  bool _isRunning = false;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override
@@ -46,22 +50,65 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
+          children: [
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              '$_second',
+              style: const TextStyle(fontSize: 60),
             ),
+            ElevatedButton(
+                onPressed: () {
+                  toggleTimer();
+                },
+                child: Text(
+                  _isRunning ? 'ストップ' : 'スタート',
+                  style:
+                      TextStyle(color: _isRunning ? Colors.red : Colors.green),
+                )),
+            ElevatedButton(
+                onPressed: () {
+                  restTimer();
+                },
+                child: const Text(
+                  'リセット',
+                  style: TextStyle(color: Colors.black),
+                ))
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
     );
+  }
+
+  void toggleTimer() {
+    if (_isRunning) {
+      _timer?.cancel();
+    } else {
+      _timer = Timer.periodic(
+        const Duration(seconds: 1),
+        (Timer timer) {
+          setState(() {
+            _second++;
+          });
+
+          if (_second == 10) {
+            restTimer();
+            _isRunning = false;
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => NextPage()));
+          }
+        },
+      );
+    }
+
+    setState(() {
+      _isRunning = !_isRunning;
+    });
+  }
+
+  void restTimer() {
+    _timer?.cancel();
+    setState(() {
+      _second = 0;
+      _isRunning = false;
+    });
   }
 }
