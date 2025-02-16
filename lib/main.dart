@@ -1,7 +1,14 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sample_bloc1/counter.dart';
+import 'package:sample_bloc1/random_color.dart';
+part 'main.g.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ProviderScope(child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -14,34 +21,19 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
+class MyHomePage extends ConsumerWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final int counter = ref.watch(counterProvider);
+    final Color color = ref.watch(randomColorProvider);
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('カウンター'),
       ),
       body: Center(
         child: Column(
@@ -51,17 +43,57 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              '$counter',
+              style: TextStyle(color: color, fontSize: 60),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              ref.read(randomColorProvider.notifier).randomColor();
+            },
+            tooltip: 'Increment',
+            child: const Icon(Icons.color_lens),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              ref.read(counterProvider.notifier).resetCounter();
+            },
+            tooltip: 'Increment',
+            child: const Icon(Icons.exposure_zero),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              ref.read(counterProvider.notifier).decrementCounter();
+            },
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              ref.read(counterProvider.notifier).incrementCounter();
+            },
+            tooltip: 'Increment',
+            child: const Icon(Icons.remove),
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              ref.read(counterProvider.notifier).multiplyCounter();
+            },
+            tooltip: 'Increment',
+            child: const Icon(Icons.close),
+          ),
+        ],
       ),
     );
   }
+}
+
+@riverpod
+String helloWorld(HelloWorldRef ref) {
+  return 'Hello world';
 }
