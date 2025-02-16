@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:sample_bloc1/count_model.dart';
 
@@ -40,7 +41,8 @@ class MyHomePage extends StatelessWidget {
               const Text(
                 'You have pushed the button this many times:',
               ),
-              Consumer<CountModel>(builder: (context, model, child) {
+              Builder(builder: (context) {
+                final model = context.watch<CountModel>();
                 return Text(
                   '${model.counter}',
                   style: Theme.of(context).textTheme.headline4,
@@ -49,8 +51,8 @@ class MyHomePage extends StatelessWidget {
             ],
           ),
         ),
-        floatingActionButton:
-            Consumer<CountModel>(builder: (context, model, child) {
+        floatingActionButton: Builder(builder: (context) {
+          final model = context.read<CountModel>();
           return FloatingActionButton(
             onPressed: model.incrementCounter,
             tooltip: 'Increment',
