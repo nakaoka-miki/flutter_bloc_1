@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -29,11 +31,48 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  Hand? myHand;
+  Hand? computerHand;
+  Result? result;
 
-  void _incrementCounter() {
+  // List<Hand> jankeList = [
+  //   Hand.rock,
+  //   Hand.scissors,
+  //   Hand.paper,
+  // ];
+
+  void chooseComputerText() {
+    final random = Random();
+    final randomNumber = random.nextInt(3);
+    final hand = Hand.values[randomNumber];
+
     setState(() {
-      _counter++;
+      computerHand = hand;
+    });
+    decideResult();
+  }
+
+  void decideResult() {
+    if (myHand == null || computerHand == null) {
+      return;
+    }
+
+    final Result result;
+
+    if (myHand == computerHand) {
+      result = Result.drow;
+    } else if (myHand == Hand.rock && computerHand == Hand.scissors) {
+      result = Result.win;
+    } else if (myHand == Hand.scissors && computerHand == Hand.paper) {
+      result = Result.win;
+    } else if (myHand == Hand.paper && computerHand == Hand.rock) {
+      result = Result.win;
+    } else {
+      result = Result.lose;
+    }
+
+    setState(() {
+      this.result = result;
     });
   }
 
@@ -48,20 +87,110 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times:',
+              '相手',
+              style: TextStyle(fontSize: 30),
             ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              computerHand?.text ?? '?',
+              style: const TextStyle(fontSize: 70),
+            ),
+            const SizedBox(
+              height: 70,
+            ),
+            Text(
+              result?.text ?? '?',
+              style: const TextStyle(fontSize: 30),
+            ),
+            const SizedBox(
+              height: 70,
+            ),
+            Text(
+              myHand?.text ?? '?',
+              style: const TextStyle(fontSize: 100),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              setState(() {
+                myHand = Hand.rock;
+              });
+              chooseComputerText();
+            },
+            tooltip: 'Increment',
+            child: const Text(
+              '👊',
+              style: TextStyle(fontSize: 30),
+            ),
+          ),
+          const SizedBox(width: 16),
+          FloatingActionButton(
+            onPressed: () {
+              setState(() {
+                myHand = Hand.scissors;
+              });
+              chooseComputerText();
+            },
+            tooltip: 'Increment',
+            child: const Text(
+              '✌️',
+              style: TextStyle(fontSize: 30),
+            ),
+          ),
+          const SizedBox(width: 16),
+          FloatingActionButton(
+            onPressed: () {
+              setState(() {
+                myHand = Hand.paper;
+              });
+              chooseComputerText();
+            },
+            tooltip: 'Increment',
+            child: const Text(
+              '✋',
+              style: TextStyle(fontSize: 30),
+            ),
+          ),
+        ],
       ),
     );
+  }
+}
+
+enum Hand {
+  rock,
+  scissors,
+  paper;
+
+  String get text {
+    switch (this) {
+      case Hand.rock:
+        return '👊';
+      case Hand.scissors:
+        return '✌️';
+      case Hand.paper:
+        return '✋';
+    }
+  }
+}
+
+enum Result {
+  win,
+  lose,
+  drow;
+
+  String get text {
+    switch (this) {
+      case Result.win:
+        return '勝ち';
+      case Result.lose:
+        return '負け';
+      case Result.drow:
+        return 'あいこ';
+    }
   }
 }
