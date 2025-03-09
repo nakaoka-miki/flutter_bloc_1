@@ -71,14 +71,14 @@ class MyHomePage extends ConsumerWidget {
               ref.read(counterProvider.notifier).decrementCounter();
             },
             tooltip: 'Increment',
-            child: const Icon(Icons.add),
+            child: const Icon(Icons.remove),
           ),
           FloatingActionButton(
             onPressed: () {
               ref.read(counterProvider.notifier).incrementCounter();
             },
             tooltip: 'Increment',
-            child: const Icon(Icons.remove),
+            child: const Icon(Icons.add),
           ),
           FloatingActionButton(
             onPressed: () {
